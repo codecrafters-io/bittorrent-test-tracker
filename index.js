@@ -9,7 +9,7 @@ const server = new Server({
   stats: true, // enable web-based statistics? [default=true]
   trustProxy: false, // enable trusting x-forwarded-for header for remote IP [default=false]
   filter: function (infoHash, params, cb) {
-    const allowed = infoHash === "49ed8b48c132974c5a30fc5f7b6e1fe77737a4df";
+    const allowed = infoHash === "49ed8b48c132974c5a30fc5f7b6e1fe77737a4df"; // congratulations.gif
 
     if (allowed) {
       // If the callback is passed `null`, the torrent will be allowed.
@@ -71,13 +71,6 @@ server.on("stop", function (addr) {
 // get info hashes for all torrents in the tracker server
 console.log(Object.keys(server.torrents));
 
-const seeder = new Client({
-  infoHash: "49ed8b48c132974c5a30fc5f7b6e1fe77737a4df", // hex string or Buffer
-  peerId: "aaa67059ed6bd08362da625b3ae77f6f4a075aaa", // hex string or Buffer
-  announce: ["http://localhost:8080/announce"], // list of tracker server urls
-  port: 6881, // torrent client port, (in browser, optional)
-});
-
 const initialSeeder = new WebTorrent({
   // maxConns: Number,        // Max number of connections per torrent (default=55)
   // nodeId: String|Uint8Array,   // DHT protocol node ID (default=randomly generated)
@@ -99,8 +92,11 @@ initialSeeder.seed(
   "./congratulations.gif",
   { announce: ["http://0.0.0.0:8080/announce"] },
   (torrent) => {
-    console.log("initiated seeding", torrent.infoHash);
+    console.log("initiated seeding for", torrent.infoHash);
     writeFileSync("./congratulations.gif.torrent", torrent.torrentFile);
-    seeder.start();
   }
 );
+
+setInterval(() => {
+  console.log(initialSeeder.torrents[0].uploaded);
+}, 1000);
