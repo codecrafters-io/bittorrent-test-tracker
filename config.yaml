@@ -60,9 +60,7 @@ chihaya:
     #
     # This supports named parameters and catch-all parameters as described at
     # https://github.com/julienschmidt/httprouter#named-parameters
-    # scrape_routes:
-    #   - "/scrape"
-    # - "/scrape.php"
+    scrape_routes: ["/scrape"]
 
     # When enabled, the IP address used to connect to the tracker will not
     # override the value clients advertise as their IP address.

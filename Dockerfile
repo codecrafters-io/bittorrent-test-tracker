@@ -1,19 +1,15 @@
-FROM golang:alpine AS build-env
+FROM golang:alpine
 
 # Install OS-level dependencies.
 RUN apk add --no-cache curl git
+RUN apk add --no-cache ca-certificates
 
 # Copy our source code into the container.
 WORKDIR /go/src/github.com/chihaya/chihaya
 ADD ./chihaya /go/src/github.com/chihaya/chihaya
-ADD config.yaml /etc/chihaya.yaml
 
 # Install our golang dependencies and compile our binary.
 RUN CGO_ENABLED=0 go install ./cmd/chihaya
-
-FROM alpine:latest
-RUN apk add --no-cache ca-certificates
-COPY --from=build-env /go/bin/chihaya /chihaya
 
 RUN adduser -D chihaya
 
@@ -23,4 +19,6 @@ EXPOSE 6880 6969
 # Drop root privileges
 USER chihaya
 
-ENTRYPOINT ["/chihaya"]
+ADD config.yaml /etc/chihaya.yaml
+
+CMD ["/go/bin/chihaya"]
