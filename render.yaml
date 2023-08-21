@@ -10,3 +10,5 @@ services:
     # dockerCommand: ./webdis.sh # optional (defaults to Dockerfile command)
     numInstances: 1
     healthCheckPath: /stats
+    domains:
+      - bittorrent-test-tracker.codecrafters.io
