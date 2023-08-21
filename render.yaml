@@ -1,11 +1,12 @@
-- type: web
-  name: bittorrent-test-tracker
-  runtime: docker
-  repo: https://github.com/codecrafters-io/bittorrent-test-tracker.git # optional
-  region: oregon # optional (defaults to oregon)
-  plan: starter # optional (defaults to starter instance type)
-  branch: main # optional (defaults to master)
-  rootDir: "/"
-  # dockerCommand: ./webdis.sh # optional (defaults to Dockerfile command)
-  numInstances: 1
-  healthCheckPath: /stats
+services:
+  - type: web
+    name: bittorrent-test-tracker
+    runtime: docker
+    repo: https://github.com/codecrafters-io/bittorrent-test-tracker.git # optional
+    region: oregon # optional (defaults to oregon)
+    plan: starter # optional (defaults to starter instance type)
+    branch: main # optional (defaults to master)
+    rootDir: "/"
+    # dockerCommand: ./webdis.sh # optional (defaults to Dockerfile command)
+    numInstances: 1
+    healthCheckPath: /stats
