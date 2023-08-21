@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/codecrafters-io/bittorrent-test-tracker#readme",
   "dependencies": {
-    "bittorrent-tracker": "^10.0.12"
-  }
+    "bittorrent-tracker": "^10.0.12",
+    "webtorrent": "^2.1.25"
+  },
+  "type": "module"
 }

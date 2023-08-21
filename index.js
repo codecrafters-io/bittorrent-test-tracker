@@ -1,145 +1,106 @@
-#!/usr/bin/env node
-import { Server } from "./index.js";
-
-const argv = minimist(process.argv.slice(2), {
-  alias: {
-    h: "help",
-    p: "port",
-    q: "quiet",
-    s: "silent",
-    v: "version",
-  },
-  boolean: [
-    "help",
-    "http",
-    "quiet",
-    "silent",
-    "trust-proxy",
-    "udp",
-    "version",
-    "ws",
-    "stats",
-  ],
-  string: ["http-hostname", "udp-hostname", "udp6-hostname"],
-  default: {
-    port: 8000,
-    stats: true,
-  },
-});
-
-if (argv.version) {
-  console.log(require("../package.json").version);
-  process.exit(0);
-}
-
-if (argv.help) {
-  console.log(
-    (() => {
-      /*
-  bittorrent-tracker - Start a bittorrent tracker server
-
-  Usage:
-    bittorrent-tracker [OPTIONS]
-
-  If no --http, --udp, or --ws option is supplied, all tracker types will be started.
-
-  Options:
-    -p, --port [number]           change the port [default: 8000]
-        --http-hostname [string]  change the http server hostname [default: '::']
-        --udp-hostname [string]   change the udp hostname [default: '0.0.0.0']
-        --udp6-hostname [string]  change the udp6 hostname [default: '::']
-        --trust-proxy             trust 'x-forwarded-for' header from reverse proxy
-        --interval                client announce interval (ms) [default: 600000]
-        --http                    enable http server
-        --udp                     enable udp server
-        --ws                      enable websocket server
-        --stats                   enable web-based statistics (default: true)
-    -q, --quiet                   only show error output
-    -s, --silent                  show no output
-    -v, --version                 print the current version
-
-  */
-    })
-      .toString()
-      .split(/\n/)
-      .slice(2, -2)
-      .join("\n")
-  );
-  process.exit(0);
-}
-
-if (argv.silent) argv.quiet = true;
-
-const allFalsy = !argv.http && !argv.udp && !argv.ws;
-
-argv.http = allFalsy || argv.http;
-argv.udp = allFalsy || argv.udp;
-argv.ws = allFalsy || argv.ws;
+import { Client, Server } from "bittorrent-tracker";
+import { readFile, writeFileSync } from "fs";
+import WebTorrent from "webtorrent";
 
 const server = new Server({
-  http: argv.http,
-  interval: argv.interval,
-  stats: argv.stats,
-  trustProxy: argv["trust-proxy"],
-  udp: argv.udp,
-  ws: argv.ws,
+  udp: false, // enable udp server? [default=true]
+  http: true, // enable http server? [default=true]
+  ws: false, // enable websocket server? [default=true]
+  stats: true, // enable web-based statistics? [default=true]
+  trustProxy: false, // enable trusting x-forwarded-for header for remote IP [default=false]
+  filter: function (infoHash, params, cb) {
+    const allowed = infoHash === "49ed8b48c132974c5a30fc5f7b6e1fe77737a4df";
+
+    if (allowed) {
+      // If the callback is passed `null`, the torrent will be allowed.
+      cb(null);
+    } else {
+      // If the callback is passed an `Error` object, the torrent will be disallowed
+      // and the error's `message` property will be given as the reason.
+      cb(new Error("disallowed torrent"));
+    }
+  },
 });
 
-server.on("error", (err) => {
-  if (!argv.silent) console.error(`ERROR: ${err.message}`);
-});
-server.on("warning", (err) => {
-  if (!argv.quiet) console.log(`WARNING: ${err.message}`);
-});
-server.on("update", (addr) => {
-  if (!argv.quiet) console.log(`update: ${addr}`);
-});
-server.on("complete", (addr) => {
-  if (!argv.quiet) console.log(`complete: ${addr}`);
-});
-server.on("start", (addr) => {
-  if (!argv.quiet) console.log(`start: ${addr}`);
-});
-server.on("stop", (addr) => {
-  if (!argv.quiet) console.log(`stop: ${addr}`);
+// Internal http, udp, and websocket servers exposed as public properties.
+server.on("error", function (err) {
+  // fatal server error!
+  console.log(err.message);
 });
 
-const hostname = {
-  http: argv["http-hostname"],
-  udp4: argv["udp-hostname"],
-  udp6: argv["udp6-hostname"],
-};
-
-server.listen(argv.port, hostname, () => {
-  if (server.http && argv.http && !argv.quiet) {
-    const httpAddr = server.http.address();
-    const httpHost = httpAddr.address !== "::" ? httpAddr.address : "localhost";
-    const httpPort = httpAddr.port;
-    console.log(`HTTP tracker: http://${httpHost}:${httpPort}/announce`);
-  }
-  if (server.udp && !argv.quiet) {
-    const udpAddr = server.udp.address();
-    const udpHost = udpAddr.address;
-    const udpPort = udpAddr.port;
-    console.log(`UDP tracker: udp://${udpHost}:${udpPort}`);
-  }
-  if (server.udp6 && !argv.quiet) {
-    const udp6Addr = server.udp6.address();
-    const udp6Host = udp6Addr.address !== "::" ? udp6Addr.address : "localhost";
-    const udp6Port = udp6Addr.port;
-    console.log(`UDP6 tracker: udp://${udp6Host}:${udp6Port}`);
-  }
-  if (server.ws && !argv.quiet) {
-    const wsAddr = server.http.address();
-    const wsHost = wsAddr.address !== "::" ? wsAddr.address : "localhost";
-    const wsPort = wsAddr.port;
-    console.log(`WebSocket tracker: ws://${wsHost}:${wsPort}`);
-  }
-  if (server.http && argv.stats && !argv.quiet) {
-    const statsAddr = server.http.address();
-    const statsHost =
-      statsAddr.address !== "::" ? statsAddr.address : "localhost";
-    const statsPort = statsAddr.port;
-    console.log(`Tracker stats: http://${statsHost}:${statsPort}/stats`);
-  }
+server.on("warning", function (err) {
+  // client sent bad data. probably not a problem, just a buggy client.
+  console.log(err.message);
 });
+
+server.on("listening", function () {
+  // fired when all requested servers are listening
+
+  // HTTP
+  const httpAddr = server.http.address();
+  const httpHost = httpAddr.address !== "::" ? httpAddr.address : "localhost";
+  const httpPort = httpAddr.port;
+  console.log(`HTTP tracker: http://${httpHost}:${httpPort}/announce`);
+});
+
+// start tracker server listening! Use 0 to listen on a random free port.
+const port = 8080;
+const hostname = "0.0.0.0";
+server.listen(port, hostname, () => {
+  // Do something on listening...
+});
+
+// listen for individual tracker messages from peers:
+
+server.on("start", function (addr) {
+  console.log("got start message from " + addr);
+});
+
+server.on("complete", function (addr) {
+  console.log("got complete message from " + addr);
+});
+
+server.on("update", function (addr) {
+  console.log("got update message from " + addr);
+});
+
+server.on("stop", function (addr) {
+  console.log("got stop message from " + addr);
+});
+
+// get info hashes for all torrents in the tracker server
+console.log(Object.keys(server.torrents));
+
+const seeder = new Client({
+  infoHash: "49ed8b48c132974c5a30fc5f7b6e1fe77737a4df", // hex string or Buffer
+  peerId: "aaa67059ed6bd08362da625b3ae77f6f4a075aaa", // hex string or Buffer
+  announce: ["http://localhost:8080/announce"], // list of tracker server urls
+  port: 6881, // torrent client port, (in browser, optional)
+});
+
+const initialSeeder = new WebTorrent({
+  // maxConns: Number,        // Max number of connections per torrent (default=55)
+  // nodeId: String|Uint8Array,   // DHT protocol node ID (default=randomly generated)
+  // peerId: String|Uint8Array,   // Wire protocol peer ID (default=randomly generated)
+  // tracker: Boolean|Object, // Enable trackers (default=true), or options object for Tracker
+  dht: false, // Enable DHT (default=true), or options object for DHT
+  lsd: false, // Enable BEP14 local service discovery (default=true)
+  utPex: false, // Enable BEP11 Peer Exchange (default=true)
+  // natUpnp:  String, // Enable NAT port mapping via NAT-UPnP (default=true). NodeJS only
+  // natPmp: Boolean,         // Enable NAT port mapping via NAT-PMP (default=true). NodeJS only.
+  webSeeds: false, // Enable BEP19 web seeds (default=true)
+  utp: false, // Enable BEP29 uTorrent transport protocol (default=true)
+  // blocklist: Array|String, // List of IP's to block
+  // downloadLimit: Number,   // Max download speed (bytes/sec) over all torrents (default=-1)
+  // uploadLimit: Number,     // Max upload speed (bytes/sec) over all torrents (default=-1)
+});
+
+initialSeeder.seed(
+  "./congratulations.gif",
+  { announce: ["http://0.0.0.0:8080/announce"] },
+  (torrent) => {
+    console.log("initiated seeding", torrent.infoHash);
+    writeFileSync("./congratulations.gif.torrent", torrent.torrentFile);
+    seeder.start();
+  }
+);
