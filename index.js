@@ -9,6 +9,7 @@ const server = new Server({
   stats: true, // enable web-based statistics? [default=true]
   trustProxy: false, // enable trusting x-forwarded-for header for remote IP [default=false]
   filter: function (infoHash, params, cb) {
+    console.log('filter called', params, infoHash)
     const allowed = infoHash === "49ed8b48c132974c5a30fc5f7b6e1fe77737a4df"; // congratulations.gif
 
     if (allowed) {
