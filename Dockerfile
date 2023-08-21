@@ -1,23 +1,26 @@
-FROM node:18-alpine
+FROM golang:alpine AS build-env
 
-# Install dependencies
-RUN apk add --no-cache git
+# Install OS-level dependencies.
+RUN apk add --no-cache curl git
 
-# Set working directory
-WORKDIR /app
+# Copy our source code into the container.
+WORKDIR /go/src/github.com/chihaya/chihaya
+ADD ./chihaya /go/src/github.com/chihaya/chihaya
+ADD config.yaml /etc/chihaya.yaml
 
-# Copy code
-ADD package.json /app/package.json
-ADD package-lock.json /app/package-lock.json
+# Install our golang dependencies and compile our binary.
+RUN CGO_ENABLED=0 go install ./cmd/chihaya
 
-# Install deps
-RUN npm install
+FROM alpine:latest
+RUN apk add --no-cache ca-certificates
+COPY --from=build-env /go/bin/chihaya /chihaya
 
-# Copy other files
-ADD . /app
+RUN adduser -D chihaya
 
-# Expose the tracker port
-EXPOSE 8080
+# Expose a docker interface to our binary.
+EXPOSE 6880 6969
 
-# Start the tracker server
-CMD ["npm", "start"]
+# Drop root privileges
+USER chihaya
+
+ENTRYPOINT ["/chihaya"]
