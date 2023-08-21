@@ -3,6 +3,9 @@ FROM node:18-alpine
 # Install dependencies
 RUN apk add --no-cache git
 
+# Set working directory
+WORKDIR /app
+
 # Copy code
 ADD package.json /app/package.json
 ADD package-lock.json /app/package-lock.json
