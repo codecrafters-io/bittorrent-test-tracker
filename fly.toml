@@ -25,4 +25,4 @@ timeout = "5s"
 path = "/announce"
 
 [processes]
-tracker = "node tracker.js"
+tracker = "/go/bin/chihaya"
