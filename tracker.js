@@ -1,6 +1,4 @@
-import { Client, Server } from "bittorrent-tracker";
-import { readFile, writeFileSync } from "fs";
-import WebTorrent from "webtorrent";
+import { Server } from "bittorrent-tracker";
 
 const server = new Server({
   udp: false, // enable udp server? [default=true]
@@ -9,7 +7,7 @@ const server = new Server({
   stats: true, // enable web-based statistics? [default=true]
   trustProxy: false, // enable trusting x-forwarded-for header for remote IP [default=false]
   filter: function (infoHash, params, cb) {
-    console.log('filter called', params, infoHash)
+    console.log("filter called", params, infoHash);
     const allowed = infoHash === "49ed8b48c132974c5a30fc5f7b6e1fe77737a4df"; // congratulations.gif
 
     if (allowed) {
@@ -47,12 +45,12 @@ server.on("listening", function () {
 // start tracker server listening! Use 0 to listen on a random free port.
 const port = 8080;
 const hostname = "0.0.0.0";
+
 server.listen(port, hostname, () => {
-  // Do something on listening...
+  console.log("server listening on port", port);
 });
 
 // listen for individual tracker messages from peers:
-
 server.on("start", function (addr) {
   console.log("got start message from " + addr);
 });
@@ -68,36 +66,3 @@ server.on("update", function (addr) {
 server.on("stop", function (addr) {
   console.log("got stop message from " + addr);
 });
-
-// get info hashes for all torrents in the tracker server
-console.log(Object.keys(server.torrents));
-
-const initialSeeder = new WebTorrent({
-  // maxConns: Number,        // Max number of connections per torrent (default=55)
-  // nodeId: String|Uint8Array,   // DHT protocol node ID (default=randomly generated)
-  // peerId: String|Uint8Array,   // Wire protocol peer ID (default=randomly generated)
-  // tracker: Boolean|Object, // Enable trackers (default=true), or options object for Tracker
-  dht: false, // Enable DHT (default=true), or options object for DHT
-  lsd: false, // Enable BEP14 local service discovery (default=true)
-  utPex: false, // Enable BEP11 Peer Exchange (default=true)
-  // natUpnp:  String, // Enable NAT port mapping via NAT-UPnP (default=true). NodeJS only
-  // natPmp: Boolean,         // Enable NAT port mapping via NAT-PMP (default=true). NodeJS only.
-  webSeeds: false, // Enable BEP19 web seeds (default=true)
-  utp: false, // Enable BEP29 uTorrent transport protocol (default=true)
-  // blocklist: Array|String, // List of IP's to block
-  // downloadLimit: Number,   // Max download speed (bytes/sec) over all torrents (default=-1)
-  // uploadLimit: Number,     // Max upload speed (bytes/sec) over all torrents (default=-1)
-});
-
-initialSeeder.seed(
-  "./congratulations.gif",
-  { announce: ["http://0.0.0.0:8080/announce"] },
-  (torrent) => {
-    console.log("initiated seeding for", torrent.infoHash);
-    writeFileSync("./congratulations.gif.torrent", torrent.torrentFile);
-  }
-);
-
-setInterval(() => {
-  console.log(initialSeeder.torrents[0].uploaded);
-}, 1000);
