@@ -14,7 +14,7 @@ RUN CGO_ENABLED=0 go install ./cmd/chihaya
 RUN adduser -D chihaya
 
 # Expose a docker interface to our binary.
-EXPOSE 6880 6969
+EXPOSE 8080
 
 # Drop root privileges
 USER chihaya

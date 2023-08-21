@@ -13,7 +13,7 @@ chihaya:
   #
   # /metrics serves metrics in the Prometheus format
   # /debug/pprof/{cmdline,profile,symbol,trace} serves profiles in the pprof format
-  # metrics_addr: "0.0.0.0:6880"
+  metrics_addr: "0.0.0.0:6880"
 
   # This block defines configuration for the tracker's HTTP interface.
   # If you do not wish to run this, delete this section.
