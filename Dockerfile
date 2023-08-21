@@ -21,4 +21,4 @@ USER chihaya
 
 ADD config.yaml /etc/chihaya.yaml
 
-CMD ["/go/bin/chihaya"]
+CMD ["/go/bin/chihaya", "--debug"]
