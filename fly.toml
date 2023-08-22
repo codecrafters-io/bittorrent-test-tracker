@@ -24,6 +24,17 @@ method = "GET"
 timeout = "5s"
 path = "/announce"
 
+[[services]]
+processes = ["seeder"]
+internal_port = 8080
+protocol = "tcp"
+auto_stop_machines = true
+auto_start_machines = true
+min_machines_running = 1
+
+[[services.ports]]
+port = 6111
+
 [processes]
 tracker = "/bin/tracker.sh"
-seed = "/bin/seeder.sh"
+seeder = "/bin/seeder.sh"
