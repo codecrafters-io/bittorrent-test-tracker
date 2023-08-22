@@ -26,7 +26,7 @@ path = "/announce"
 
 [[services]]
 processes = ["seeder"]
-internal_port = 8080
+internal_port = 51413
 protocol = "tcp"
 auto_stop_machines = true
 auto_start_machines = true
