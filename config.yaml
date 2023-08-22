@@ -2,7 +2,7 @@
 chihaya:
   # The interval communicated with BitTorrent clients informing them how
   # frequently they should announce in between client events.
-  announce_interval: "5m"
+  announce_interval: "1m"
 
   # The interval communicated with BitTorrent clients informing them of the
   # minimal duration between announces.
@@ -110,30 +110,8 @@ chihaya:
   #   max_scrape_infohashes: 50
 
   # This block defines configuration used for the storage of peer data.
-  storage:
-    name: "memory"
-    config:
-      # The frequency which stale peers are removed.
-      # This balances between
-      # - collecting garbage more often, potentially using more CPU time, but potentially using less memory (lower value)
-      # - collecting garbage less frequently, saving CPU time, but keeping old peers long, thus using more memory (higher value).
-      gc_interval: "3m"
-
-      # The amount of time until a peer is considered stale.
-      # To avoid churn, keep this slightly larger than `announce_interval`
-      peer_lifetime: "7m"
-
-      # The number of partitions data will be divided into in order to provide a
-      # higher degree of parallelism.
-      shard_count: 1024
-
-      # The interval at which metrics about the number of infohashes and peers
-      # are collected and posted to Prometheus.
-      prometheus_reporting_interval: "1s"
-
-  # This block defines configuration used for redis storage.
   # storage:
-  #   name: redis
+  #   name: "memory"
   #   config:
   #     # The frequency which stale peers are removed.
   #     # This balances between
@@ -141,25 +119,47 @@ chihaya:
   #     # - collecting garbage less frequently, saving CPU time, but keeping old peers long, thus using more memory (higher value).
   #     gc_interval: "3m"
 
+  #     # The amount of time until a peer is considered stale.
+  #     # To avoid churn, keep this slightly larger than `announce_interval`
+  #     peer_lifetime: "7m"
+
+  #     # The number of partitions data will be divided into in order to provide a
+  #     # higher degree of parallelism.
+  #     shard_count: 1024
+
   #     # The interval at which metrics about the number of infohashes and peers
   #     # are collected and posted to Prometheus.
   #     prometheus_reporting_interval: "1s"
 
-  #     # The amount of time until a peer is considered stale.
-  #     # To avoid churn, keep this slightly larger than `announce_interval`
-  #     peer_lifetime: "31m"
+  # This block defines configuration used for redis storage.
+  storage:
+    name: redis
+    config:
+      # The frequency which stale peers are removed.
+      # This balances between
+      # - collecting garbage more often, potentially using more CPU time, but potentially using less memory (lower value)
+      # - collecting garbage less frequently, saving CPU time, but keeping old peers long, thus using more memory (higher value).
+      gc_interval: "3m"
 
-  #     # The address of redis storage.
-  #     redis_broker: "redis://pwd@127.0.0.1:6379/0"
+      # The interval at which metrics about the number of infohashes and peers
+      # are collected and posted to Prometheus.
+      prometheus_reporting_interval: "1s"
 
-  #     # The timeout for reading a command reply from redis.
-  #     redis_read_timeout: "15s"
+      # The amount of time until a peer is considered stale.
+      # To avoid churn, keep this slightly larger than `announce_interval`
+      peer_lifetime: "2m"
 
-  #     # The timeout for writing a command to redis.
-  #     redis_write_timeout: "15s"
+      # The address of redis storage.
+      redis_broker: "REDIS_URL"
 
-  #     # The timeout for connecting to redis server.
-  #     redis_connect_timeout: "15s"
+      # The timeout for reading a command reply from redis.
+      redis_read_timeout: "15s"
+
+      # The timeout for writing a command to redis.
+      redis_write_timeout: "15s"
+
+      # The timeout for connecting to redis server.
+      redis_connect_timeout: "15s"
 
   # This block defines configuration used for middleware executed before a
   # response has been returned to a BitTorrent client.
