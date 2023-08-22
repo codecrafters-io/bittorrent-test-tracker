@@ -64,7 +64,7 @@ chihaya:
 
     # When enabled, the IP address used to connect to the tracker will not
     # override the value clients advertise as their IP address.
-    allow_ip_spoofing: false
+    allow_ip_spoofing: true
 
     # The HTTP Header containing the IP address of the client.
     # This is only necessary if using a reverse proxy.
