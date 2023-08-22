@@ -1,5 +1,8 @@
-serve:
-	docker build -t test . && docker run -it -p 8080:8080 test
+run_tracker:
+	docker build -t test . && docker run -it -p 8080:8080 test /bin/tracker.sh
+
+run_seeder:
+	docker build -t test . && docker run -it -p 8080:8080 test /bin/seeder.sh
 
 test_production:
 	curl -G \
