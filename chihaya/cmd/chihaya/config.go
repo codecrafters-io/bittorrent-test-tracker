@@ -16,6 +16,7 @@ import (
 	_ "github.com/chihaya/chihaya/middleware/jwt"
 	_ "github.com/chihaya/chihaya/middleware/torrentapproval"
 	_ "github.com/chihaya/chihaya/middleware/varinterval"
+	_ "github.com/chihaya/chihaya/middleware/whitelistseeds"
 
 	// Imports to register storage drivers.
 	_ "github.com/chihaya/chihaya/storage/memory"
