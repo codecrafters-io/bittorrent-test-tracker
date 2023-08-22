@@ -1,2 +1,2 @@
 #!/bin/sh
-/go/bin/chihaya --debug
+/go/bin/chihaya
