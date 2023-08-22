@@ -26,14 +26,18 @@ func init() {
 func (d driver) NewHook(optionBytes []byte) (middleware.Hook, error) {
 	clientIpsStr := os.Getenv("EXPOSED_CLIENT_IPS")
 
-	return NewHook(strings.Split(clientIpsStr, ","))
+	if clientIpsStr == "" {
+		return nil, fmt.Errorf("expected EXPOSED_CLIENT_IPS to be present")
+	} else {
+		return NewHook(strings.Split(clientIpsStr, ","))
+	}
 }
 
 type hook struct {
 	whitelistedSeederIps map[string]bool
 }
 
-// NewHook returns an instance of the client approval middleware.
+// NewHook returns an instance of the seed whitelisting middleware.
 func NewHook(whitelistedSeederIps []string) (middleware.Hook, error) {
 	h := &hook{
 		whitelistedSeederIps: make(map[string]bool),
@@ -43,7 +47,7 @@ func NewHook(whitelistedSeederIps []string) (middleware.Hook, error) {
 		h.whitelistedSeederIps[ip] = true
 	}
 
-	if len(whitelistedSeederIps) <= 0 {
+	if len(whitelistedSeederIps) == 0 {
 		return nil, fmt.Errorf("expected whitelisted seeder ips to be present")
 	}
 
