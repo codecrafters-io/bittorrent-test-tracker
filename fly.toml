@@ -14,27 +14,15 @@ internal_port = 8080
 force_https = false
 auto_stop_machines = true
 auto_start_machines = true
-min_machines_running = 1
-processes = ["tracker"]
+min_machines_running = 0
+processes = ["web"]
 
 [[http_service.checks]]
 grace_period = "10s"
 interval = "30s"
 method = "GET"
 timeout = "5s"
-path = "/announce"
-
-[[services]]
-processes = ["seeder"]
-internal_port = 51413
-protocol = "tcp"
-auto_stop_machines = true
-auto_start_machines = true
-min_machines_running = 1
-
-[[services.ports]]
-port = 51413
+path = "/scrape"
 
 [processes]
-tracker = "/bin/tracker.sh"
-seeder = "/bin/seeder.sh"
+web = "/bin/tracker.sh"
