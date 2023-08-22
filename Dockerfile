@@ -3,6 +3,7 @@ FROM golang:alpine
 # Install OS-level dependencies.
 RUN apk add --no-cache curl git
 RUN apk add --no-cache ca-certificates
+RUN apk add --no-cache transmission-cli
 
 # Copy our source code into the container.
 WORKDIR /go/src/github.com/chihaya/chihaya
@@ -21,4 +22,7 @@ USER chihaya
 
 ADD config.yaml /etc/chihaya.yaml
 
-CMD ["/go/bin/chihaya", "--debug"]
+ADD tracker.sh /bin/tracker.sh
+ADD seeder.sh /bin/seeder.sh
+
+CMD ["/bin/tracker.sh"]

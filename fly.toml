@@ -25,4 +25,5 @@ timeout = "5s"
 path = "/announce"
 
 [processes]
-tracker = "/go/bin/chihaya"
+tracker = "/bin/tracker.sh"
+seed = "/bin/seeder.sh"
