@@ -12,17 +12,13 @@ ADD ./chihaya /go/src/github.com/chihaya/chihaya
 # Install our golang dependencies and compile our binary.
 RUN CGO_ENABLED=0 go install ./cmd/chihaya
 
-RUN adduser -D chihaya
-
 # Expose a docker interface to our binary.
 EXPOSE 8080
-
-# Drop root privileges
-USER chihaya
 
 ADD config.yaml /etc/chihaya.yaml
 
 ADD tracker.sh /bin/tracker.sh
 ADD seeder.sh /bin/seeder.sh
+ADD torrent_files /etc/torrent_files
 
 CMD ["/bin/tracker.sh"]

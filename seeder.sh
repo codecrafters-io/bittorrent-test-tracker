@@ -1,2 +1,2 @@
 #!/bin/sh
-transmission-cli congratulations.gif.torrent -w ./
+transmission-cli /etc/torrent_files/congratulations.gif.torrent -w /etc/torrent_files
