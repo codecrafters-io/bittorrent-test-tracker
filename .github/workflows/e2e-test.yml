@@ -31,7 +31,8 @@ jobs:
         run: echo "b672112a70f71e8be8310b2cf182aaf1b8cf152c25e4be4154d021f8e0659d20 congratulations.gif" | sha256sum --check
 
       - name: Send GitHub Action trigger data to Slack workflow
+        if: failure()
         id: slack
         uses: slackapi/slack-github-action@v1.24.0
         env:
-            SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
