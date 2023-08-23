@@ -16,11 +16,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          repository: codecrafters-io/bittorrent-test-seeder
+          ref: main
+          path: seeder
+
       - name: Install torrent client
         run: sudo apt-get install -y aria2
 
       - name: Download the torrent file
-        run: aria2c --seed-time=0 tests/congratulations.gif.torrent
+        run: aria2c --seed-time=0 seeder/torrent_files/congratulations.gif.torrent
 
       # - name: Upload downloaded file
       #   uses: actions/upload-artifact@v2
