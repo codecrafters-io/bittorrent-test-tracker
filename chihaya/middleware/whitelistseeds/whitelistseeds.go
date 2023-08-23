@@ -56,10 +56,12 @@ func NewHook(whitelistedSeederIps []string) (middleware.Hook, error) {
 }
 
 func (h *hook) HandleAnnounce(ctx context.Context, req *bittorrent.AnnounceRequest, resp *bittorrent.AnnounceResponse) (context.Context, error) {
-	log.Debug("whitelistseeds: executed")
+	log.Debug(fmt.Sprintf("whitelistseeds: executed, peers length: %v", len(resp.IPv4Peers)))
 
 	filteredIPv4Peers := make([]bittorrent.Peer, 0, len(resp.IPv4Peers))
 	for _, peer := range resp.IPv4Peers {
+		log.Debug(fmt.Sprintf("whielistseeds: iterating, peer: %v", peer.IP.String()))
+
 		if _, whitelisted := h.whitelistedSeederIps[peer.IP.String()]; whitelisted {
 			log.Debug(fmt.Sprintf("whitelistseeds: whitelisting peer %v", peer.IP.String()))
 			filteredIPv4Peers = append(filteredIPv4Peers, peer)
