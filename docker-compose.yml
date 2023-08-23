@@ -8,6 +8,8 @@ services:
 
   web:
     build: .
+    ports:
+      - "8080:8080"
     environment:
       EXPOSED_CLIENT_IPS: "0.0.0.0"
       REDIS_URL: redis://redis:6379

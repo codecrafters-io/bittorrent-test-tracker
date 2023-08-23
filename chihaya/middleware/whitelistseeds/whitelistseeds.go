@@ -10,6 +10,7 @@ import (
 
 	"github.com/chihaya/chihaya/bittorrent"
 	"github.com/chihaya/chihaya/middleware"
+	"github.com/chihaya/chihaya/pkg/log"
 )
 
 // Name is the name by which this middleware is registered with Chihaya.
@@ -58,7 +59,10 @@ func (h *hook) HandleAnnounce(ctx context.Context, req *bittorrent.AnnounceReque
 	filteredIPv4Peers := make([]bittorrent.Peer, 0, len(resp.IPv4Peers))
 	for _, peer := range resp.IPv4Peers {
 		if _, whitelisted := h.whitelistedSeederIps[peer.IP.String()]; whitelisted {
+			log.Debug(fmt.Sprintf("whitelistseeds: whitelisting peer %v", peer.IP.String()))
 			filteredIPv4Peers = append(filteredIPv4Peers, peer)
+		} else {
+			log.Debug(fmt.Sprintf("whitelistseeds: ignoring peer %v", peer.IP.String()))
 		}
 	}
 
