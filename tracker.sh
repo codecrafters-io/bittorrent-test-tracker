@@ -8,4 +8,4 @@ echo ""
 cat /etc/chihaya.yaml
 echo ""
 
-exec /go/bin/chihaya
+exec /go/bin/chihaya --debug
