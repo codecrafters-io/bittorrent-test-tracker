@@ -25,4 +25,4 @@ jobs:
       #     path: congratulations.gif
 
       - name: Verify SHA sum
-        run: echo "YOUR_EXPECTED_SHA_SUM congratulations.gif" | sha256sum --check
+        run: echo "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad congratulations.gif" | sha256sum --check
