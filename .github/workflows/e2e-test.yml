@@ -45,6 +45,9 @@ jobs:
       - name: Verify SHA sum [3]
         run: echo "ac41f7ec15b3ce01d63d577508c006d13c662e83c265a1f1d2c393963e287aa1 itsworking.gif" | sha256sum --check
 
+      - name: Verify SHA sum [4]
+        run: echo "034779f836050853f4d520fef986db353633d64025241c993bebc0aaf56c081c sample.txt" | sha256sum --check
+
       - name: Heartbeat
         if: always()
         run: curl https://uptime.betterstack.com/api/v1/heartbeat/2M55J8QACm9v9KP9BQzwppwi
