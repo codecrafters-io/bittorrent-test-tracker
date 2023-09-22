@@ -5,5 +5,5 @@ metadata:
   labels:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
 data:
-  config.yaml: |
+  config.yaml: |-
 {{ toYaml .Values.config | indent 4 }}
