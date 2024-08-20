@@ -48,6 +48,15 @@ jobs:
       - name: Verify SHA sum [4]
         run: echo "034779f836050853f4d520fef986db353633d64025241c993bebc0aaf56c081c sample.txt" | sha256sum --check
 
+      - name: Verify SHA sum [5]
+        run: echo "edcfa2733b92e9b3de1c0ad744a232b8eb590adbaafb56d455470da6e5317e38 magnet1.gif" | sha256sum --check
+
+      - name: Verify SHA sum [6]
+        run: echo "1b8f0a3a903aa6b0c7a3cb1085911911e869e5ced170343a6f7bc0dec888af7b magnet2.gif" | sha256sum --check
+
+      - name: Verify SHA sum [7]
+        run: echo "8f9affde72bd2058c86baee5b9615a53cd8280aa00715588749c55b19fa95ef2 magnet3.gif" | sha256sum --check
+
       - name: Heartbeat
         run: curl https://uptime.betterstack.com/api/v1/heartbeat/2M55J8QACm9v9KP9BQzwppwi
 
