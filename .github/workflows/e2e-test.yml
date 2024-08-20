@@ -49,7 +49,6 @@ jobs:
         run: echo "034779f836050853f4d520fef986db353633d64025241c993bebc0aaf56c081c sample.txt" | sha256sum --check
 
       - name: Heartbeat
-        if: always()
         run: curl https://uptime.betterstack.com/api/v1/heartbeat/2M55J8QACm9v9KP9BQzwppwi
 
       - name: Send GitHub Action trigger data to Slack workflow
