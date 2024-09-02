@@ -27,7 +27,7 @@ jobs:
         run: sudo apt-get install -y aria2
 
       - name: Download torrent files
-        run: ls seeder/torrent_files/*.torrent | xargs -P8 -n1 aria2c --seed-time=0
+        run: ls seeder/torrent_files/**/*.torrent | xargs -P8 -n1 aria2c --seed-time=0
         timeout-minutes: 2
 
       # - name: Upload downloaded file
