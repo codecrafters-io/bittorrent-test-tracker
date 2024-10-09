@@ -36,12 +36,19 @@ jobs:
       - name: Install torrent client
         run: sudo apt-get install -y aria2
 
-      - name: Download torrent file
-        run: aria2c --seed-time=0 seeder/torrent_files/**/${{ matrix.file.name }}.torrent
-        timeout-minutes: 2
+      - name: Download torrent files 10 times in parallel
+        run: |
+          for i in {1..10}; do
+            aria2c --seed-time=0 seeder/torrent_files/**/${{ matrix.file.name }}.torrent -d download_$i &
+          done
+          wait
+        timeout-minutes: 20
 
-      - name: Verify SHA sum
-        run: echo "${{ matrix.file.sha }} ${{ matrix.file.name }}" | sha256sum --check
+      - name: Verify SHA sum for all downloads
+        run: |
+          for i in {1..10}; do
+            echo "${{ matrix.file.sha }} download_$i/${{ matrix.file.name }}" | sha256sum --check
+          done
 
       - name: Heartbeat
         run: curl https://uptime.betterstack.com/api/v1/heartbeat/2M55J8QACm9v9KP9BQzwppwi
