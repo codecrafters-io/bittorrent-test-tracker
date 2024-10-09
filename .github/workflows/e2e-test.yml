@@ -8,40 +8,30 @@ on:
     - cron: "*/10 * * * *"
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   download:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         file:
-          - {
-              name: "congratulations.gif",
-              sha: "a672112a70f71e8be8310b2cf182aaf1b8cf152c25e4be4154d021f8e0659d20",
-            }
-          - {
-              name: "codercat.gif",
-              sha: "4bcfae1708d590ed459d56223e39343536b5fe863bd3c12edc810e3e46633ae5",
-            }
-          - {
-              name: "itsworking.gif",
-              sha: "ac41f7ec15b3ce01d63d577508c006d13c662e83c265a1f1d2c393963e287aa1",
-            }
-          - {
-              name: "sample.txt",
-              sha: "034779f836050853f4d520fef986db353633d64025241c993bebc0aaf56c081c",
-            }
-          - {
-              name: "magnet1.gif",
-              sha: "edcfa2733b92e9b3de1c0ad744a232b8eb590adbaafb56d455470da6e5317e38",
-            }
-          - {
-              name: "magnet2.gif",
-              sha: "1b8f0a3a903aa6b0c7a3cb1085911911e869e5ced170343a6f7bc0dec888af7b",
-            }
-          - {
-              name: "magnet3.gif",
-              sha: "8f9affde72bd2058c86baee5b9615a53cd8280aa00715588749c55b19fa95ef2",
-            }
+          - name: "congratulations.gif"
+            sha: "a672112a70f71e8be8310b2cf182aaf1b8cf152c25e4be4154d021f8e0659d20"
+          - name: "codercat.gif"
+            sha: "4bcfae1708d590ed459d56223e39343536b5fe863bd3c12edc810e3e46633ae5"
+          - name: "itsworking.gif"
+            sha: "ac41f7ec15b3ce01d63d577508c006d13c662e83c265a1f1d2c393963e287aa1"
+          - name: "sample.txt"
+            sha: "034779f836050853f4d520fef986db353633d64025241c993bebc0aaf56c081c"
+          - name: "magnet1.gif"
+            sha: "edcfa2733b92e9b3de1c0ad744a232b8eb590adbaafb56d455470da6e5317e38"
+          - name: "magnet2.gif"
+            sha: "1b8f0a3a903aa6b0c7a3cb1085911911e869e5ced170343a6f7bc0dec888af7b"
+          - name: "magnet3.gif"
+            sha: "8f9affde72bd2058c86baee5b9615a53cd8280aa00715588749c55b19fa95ef2"
 
     steps:
       - name: Checkout code
