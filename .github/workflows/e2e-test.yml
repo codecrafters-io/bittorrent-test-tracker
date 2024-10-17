@@ -61,16 +61,19 @@ jobs:
             echo "${{ matrix.file.sha }} download_$i/${{ matrix.file.name }}" | sha256sum --check
           done
 
-      - name: Send GitHub Action trigger data to Slack workflow
-        if: failure()
-        id: slack
-        uses: slackapi/slack-github-action@v1.24.0
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-
   heartbeat:
     needs: download
     runs-on: ubuntu-latest
     steps:
       - name: Heartbeat
         run: curl https://uptime.betterstack.com/api/v1/heartbeat/2M55J8QACm9v9KP9BQzwppwi
+
+  notify_slack:
+    needs: [download]
+    runs-on: ubuntu-latest
+    if: failure()
+    steps:
+      - name: Send GitHub Action trigger data to Slack workflow
+        uses: slackapi/slack-github-action@v1.24.0
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
