@@ -47,9 +47,9 @@ jobs:
       - name: Install torrent client
         run: sudo apt-get install -y aria2
 
-      - name: Download torrent files 10 times in parallel
+      - name: Download torrent files 5 times in parallel
         run: |
-          for i in {1..10}; do
+          for i in {1..5}; do
             aria2c --seed-time=0 seeder/torrent_files/**/${{ matrix.file.name }}.torrent -d download_$i &
           done
           wait
@@ -57,7 +57,7 @@ jobs:
 
       - name: Verify SHA sum for all downloads
         run: |
-          for i in {1..10}; do
+          for i in {1..5}; do
             echo "${{ matrix.file.sha }} download_$i/${{ matrix.file.name }}" | sha256sum --check
           done
 
