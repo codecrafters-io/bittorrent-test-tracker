@@ -1,6 +1,7 @@
 package redis
 
 import (
+	"crypto/tls"
 	"errors"
 	"net/url"
 	"strconv"
@@ -92,6 +93,13 @@ func (rc *redisConnector) open() (redigolib.Conn, error) {
 		opts = append(opts, redigolib.DialPassword(rc.URL.Password))
 	}
 
+	if rc.URL.UseTLS {
+		opts = append(opts, redigolib.DialUseTLS(true))
+		opts = append(opts, redigolib.DialTLSConfig(&tls.Config{
+			InsecureSkipVerify: true,
+		}))
+	}
+
 	if rc.SocketPath != "" {
 		return redigolib.Dial("unix", rc.SocketPath, opts...)
 	}
@@ -107,6 +115,7 @@ type redisURL struct {
 	Host     string
 	Password string
 	DB       int
+	UseTLS   bool
 }
 
 // parseRedisURL parse rawurl into redisURL
@@ -116,8 +125,8 @@ func parseRedisURL(target string) (*redisURL, error) {
 	if err != nil {
 		return nil, err
 	}
-	if u.Scheme != "redis" {
-		return nil, errors.New("no redis scheme found")
+	if u.Scheme != "redis" && u.Scheme != "rediss" {
+		return nil, errors.New("no redis/rediss scheme found")
 	}
 
 	db := 0 // default redis db
@@ -128,9 +137,11 @@ func parseRedisURL(target string) (*redisURL, error) {
 			return nil, err
 		}
 	}
+
 	return &redisURL{
 		Host:     u.Host,
 		Password: u.User.String(),
 		DB:       db,
+		UseTLS:   u.Scheme == "rediss", // (redis:// is unencrypted, rediss:// is encrypted)
 	}, nil
 }
