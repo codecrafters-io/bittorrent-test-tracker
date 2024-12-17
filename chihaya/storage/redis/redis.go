@@ -52,7 +52,7 @@ type redisConnector struct {
 // NewPool returns a new pool of Redis connections
 func (rc *redisConnector) NewPool() *redigolib.Pool {
 	return &redigolib.Pool{
-		MaxIdle:     3,
+		MaxIdle:     10,
 		IdleTimeout: 240 * time.Second,
 		Dial: func() (redigolib.Conn, error) {
 			c, err := rc.open()
